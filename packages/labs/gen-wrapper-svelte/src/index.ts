@@ -41,21 +41,11 @@ export const generateSvelteWrapper = async (
       path.basename(pkg.rootDir)
     );
     const sfcFiles = wrapperSFCFiles(pkg.packageJson, litModules);
-    const moduleNames = Object.keys(sfcFiles).map((f) => {
-      // Need to get module name to include sub path.
-      const dirname = path.dirname(f);
-      const basename = `${path.basename(f, '.vue')}`;
-      const moduleName = path
-        .join(dirname, basename)
-        .replace(/\\/g, '/')
-        .replace(/^src\//, '');
-      return moduleName;
-    });
 
     return {
       [sveltePkgName]: {
-        '.gitignore': gitIgnoreTemplate(moduleNames),
-        '.prettierignore': prettierIgnoreTemplate(),
+        '.gitignore': ignoreTemplate(),
+        '.prettierignore': ignoreTemplate(),
         'package.json': packageJsonTemplate(pkg.packageJson),
         'tsconfig.json': tsconfigTemplate(),
         'vite.config.ts': viteConfigTemplate(pkg.packageJson),
@@ -74,10 +64,9 @@ export const generateSvelteWrapper = async (
 // TODO(kschaaf): Should this be configurable?
 const packageNameToSveltePackageName = (pkgName: string) => `${pkgName}-svelte`;
 
-const gitIgnoreTemplate = (moduleNames: string[]) =>
-  moduleNames.map((f) => `/${f}.*`).join('\n');
-
-const prettierIgnoreTemplate = () =>
+// Build output and dependencies. Unlike the Vue wrappers, Svelte wrappers are
+// compiled into `dist/`, so there's nothing to ignore next to the sources.
+const ignoreTemplate = () =>
   ['.svelte-kit/', 'dist/', 'node_modules/'].join('\n');
 
 const getSvelteFileName = (dir: string, name: string) => {
@@ -114,8 +103,9 @@ const wrapperSFCFiles = (
     // Note, if a given source module includes more than component, the author
     // probably intended to make them available via a single import and this
     // separate module preserves that intent.
+    // It goes next to the wrappers in `src/lib` so its `./` specifiers resolve.
     if (wrappers.length > 1) {
-      wrapperFiles[sourcePath] = exports.join('/n');
+      wrapperFiles[sourcePath.replace(/^src/, 'src/lib')] = exports.join('\n');
     }
   }
   wrapperFiles['src/lib/index.ts'] = globalExports.join('\n');
