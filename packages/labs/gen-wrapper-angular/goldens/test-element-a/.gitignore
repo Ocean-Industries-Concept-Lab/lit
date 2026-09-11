@@ -2,7 +2,6 @@ src/element-a.ts
 src/element-colliding-prop-and-slot.ts
 src/element-events.ts
 src/element-mixins.ts
-src/element-native-events.ts
 src/element-props.ts
 src/element-slots.ts
 src/element-without-props.ts
