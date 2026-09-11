@@ -105,7 +105,8 @@ const wrapperSFCFiles = (
     for (const [name, content] of wrappers) {
       exports.push(`export {default as ${name}} from './${name}.svelte';`);
       wrapperFiles[getSvelteFileName(dir, name)] = content!;
-      const dirname = dir.replace(/^src/g, '');
+      // `sourcePath` uses the OS separator; import specifiers need `/`.
+      const dirname = dir.replace(/\\/g, '/').replace(/^src/g, '');
       globalExports.push(
         `export {default as ${name}} from '.${dirname}/${name}.svelte';`
       );
