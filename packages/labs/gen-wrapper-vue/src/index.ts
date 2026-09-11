@@ -91,7 +91,7 @@ const wrapperSFCFiles = (
     // probably intended to make them available via a single import and this
     // separate module preserves that intent.
     if (wrappers.length > 1) {
-      wrapperFiles[sourcePath] = exports.join('/n');
+      wrapperFiles[sourcePath] = exports.join('\n');
     }
   }
   return wrapperFiles;

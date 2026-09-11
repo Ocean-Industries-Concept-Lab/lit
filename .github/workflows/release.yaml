@@ -38,7 +38,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Checkout Lit Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: lit
           # This makes Actions fetch all Git history so that Changesets can
@@ -49,7 +49,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
           node-version: 24.5
           cache: 'npm'
@@ -69,9 +69,9 @@ jobs:
         # run, and its output will appear in the raw logs). Unknown why this is the case,
         # see https://github.com/changesets/action/issues/149 for discussion.
         id: cs
-        # Pinning to v1.5.1 as v1.5.2 introduced a bug with sub directories
-        # See https://github.com/changesets/action/issues/501
-        uses: changesets/action@v1.5.1
+        # v1.5.2 broke `cwd` (https://github.com/changesets/action/issues/501);
+        # fixed in v1.8.0. Stay on v1: v2 renames inputs and drops `cwd`.
+        uses: changesets/action@v1.9.0
         with:
           # The `working-directory` option is only available for steps that use
           # `run`. This `cwd` option is the same, but specific to this action.
