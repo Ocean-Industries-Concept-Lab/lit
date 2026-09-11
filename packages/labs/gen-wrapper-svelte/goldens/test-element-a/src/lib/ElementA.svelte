@@ -1,6 +1,7 @@
 <script lang="ts">
   import "@lit-internal/test-element-a/element-a.js";
   import { setProperties, forwardEvents } from "$lib/util.js";
+  import NamedSlot from "$lib/NamedSlot.svelte";
 
   import type { Snippet } from "svelte";
 
@@ -39,14 +40,10 @@
   {/if}
 
   {#if stuff}
-    <div slot="stuff">
-      {@render stuff()}
-    </div>
+    <NamedSlot name="stuff" content={stuff} />
   {/if}
 
   {#if tabTitle0}
-    <div slot="tab-title-0">
-      {@render tabTitle0()}
-    </div>
+    <NamedSlot name="tab-title-0" content={tabTitle0} />
   {/if}
 </element-a>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import "@lit-internal/test-element-a/element-colliding-prop-and-slot.js";
   import { setProperties } from "$lib/util.js";
+  import NamedSlot from "$lib/NamedSlot.svelte";
 
   import type { Snippet } from "svelte";
 
@@ -27,8 +28,6 @@
   {style}
 >
   {#if contentSnippet}
-    <div slot="content">
-      {@render contentSnippet()}
-    </div>
+    <NamedSlot name="content" content={contentSnippet} />
   {/if}
 </element-colliding-prop-and-slot>

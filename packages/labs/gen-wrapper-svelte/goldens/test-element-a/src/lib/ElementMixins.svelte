@@ -1,13 +1,15 @@
 <script lang="ts">
+  export type { MixedVariant } from "@lit-internal/test-element-a/element-mixins.js";
   import "@lit-internal/test-element-a/element-mixins.js";
   import { setProperties } from "$lib/util.js";
-
+  import type { MixedVariant } from "@lit-internal/test-element-a/element-mixins.js";
   import type { Snippet } from "svelte";
 
   export interface Props {
     class?: string;
     style?: string;
     mixedProp?: number | undefined;
+    mixedVariant?: MixedVariant | undefined;
   }
   export interface Events {}
   export interface Slots {

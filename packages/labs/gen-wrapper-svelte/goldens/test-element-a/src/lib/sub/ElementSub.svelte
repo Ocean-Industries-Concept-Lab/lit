@@ -2,6 +2,7 @@
   export type { ElementSubEnum } from "@lit-internal/test-element-a/sub/element-sub.js";
   import "@lit-internal/test-element-a/sub/element-sub.js";
   import { setProperties, forwardEvents } from "$lib/util.js";
+  import NamedSlot from "$lib/NamedSlot.svelte";
   import type { ElementSubEnum } from "@lit-internal/test-element-a/sub/element-sub.js";
   import type { Snippet } from "svelte";
 
@@ -39,8 +40,6 @@
   {/if}
 
   {#if stuff}
-    <div slot="stuff">
-      {@render stuff()}
-    </div>
+    <NamedSlot name="stuff" content={stuff} />
   {/if}
 </element-sub>

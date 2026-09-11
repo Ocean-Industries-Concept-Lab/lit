@@ -1,6 +1,7 @@
 <script lang="ts">
   import "@lit-internal/test-element-a/element-slots.js";
   import { setProperties } from "$lib/util.js";
+  import NamedSlot from "$lib/NamedSlot.svelte";
 
   import type { Snippet } from "svelte";
 
@@ -25,9 +26,7 @@
 <element-slots use:setProperties={props} class={className} {style}>
   {#if props.tabs && tabIcon}
     {#each props.tabs as item}
-      <div slot="tab-{item.id}-icon">
-        {@render tabIcon(item)}
-      </div>
+      <NamedSlot name="tab-{item.id}-icon" content={tabIcon} arg={item} />
     {/each}
   {/if}
 </element-slots>

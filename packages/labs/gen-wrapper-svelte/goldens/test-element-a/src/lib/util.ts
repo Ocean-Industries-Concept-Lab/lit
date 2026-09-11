@@ -46,3 +46,59 @@ export function forwardEvents(node: HTMLElement, handlers: EventHandlers) {
     },
   };
 }
+
+/**
+ * `slot` value of the markers that delimit a NamedSlot region. It matches no
+ * real slot, so the markers stay unassigned and never affect layout.
+ */
+export const SLOT_MARKER = "svelte-slot-marker";
+
+export interface AssignSlotOptions {
+  name: string;
+  /** Called when the region renders text, which cannot carry a `slot`. */
+  onText: () => void;
+}
+
+const isMarker = (node: Node) =>
+  node instanceof HTMLTemplateElement && node.slot === SLOT_MARKER;
+
+/**
+ * Assigns the elements rendered between this start marker and the next marker
+ * to a named slot by setting their `slot` attribute, so they slot natively
+ * like the web component's documented usage. Nodes are never moved: Svelte
+ * removes blocks by walking their sibling range.
+ */
+export function assignSlot(
+  start: HTMLTemplateElement,
+  options: AssignSlotOptions,
+) {
+  let current = options;
+  const assign = () => {
+    for (
+      let node = start.nextSibling;
+      node && !isMarker(node);
+      node = node.nextSibling
+    ) {
+      if (node instanceof Element) {
+        if (node.slot !== current.name) node.slot = current.name;
+      } else if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+        current.onText();
+        return;
+      }
+    }
+  };
+  assign();
+  // Re-assign when the snippet's top-level nodes change, e.g. an `{#if}` at
+  // the snippet root. Mutation records are delivered before the next paint.
+  const observer = new MutationObserver(assign);
+  if (start.parentNode) observer.observe(start.parentNode, { childList: true });
+  return {
+    update(options: AssignSlotOptions) {
+      current = options;
+      assign();
+    },
+    destroy() {
+      observer.disconnect();
+    },
+  };
+}

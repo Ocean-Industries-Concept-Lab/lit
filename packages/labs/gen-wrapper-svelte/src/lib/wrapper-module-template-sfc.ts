@@ -191,6 +191,9 @@ const slotNameToPropName = (name: string) => {
     .join('');
 };
 
+const isDefaultSlot = (slot: NamedDescribed) =>
+  slot.name === 'default' || slot.name === '' || slot.name === '-';
+
 type NamingPlan = {
   snippetNamesBySlotName: Map<string, string>;
 };
@@ -206,9 +209,9 @@ const createNamingPlan = (
   const collidingPropNames = new Set<string>();
 
   for (const slot of slots.values()) {
-    const isDefault =
-      slot.name === 'default' || slot.name === '' || slot.name === '-';
-    const snippetName = isDefault ? 'children' : slotNameToPropName(slot.name);
+    const snippetName = isDefaultSlot(slot)
+      ? 'children'
+      : slotNameToPropName(slot.name);
     snippetNamesBySlotName.set(slot.name, snippetName);
     if (propNames.has(snippetName)) {
       collidingPropNames.add(snippetName);
@@ -262,9 +265,7 @@ const renderSnippets = (
   namingPlan: NamingPlan
 ) => {
   const parts = Array.from(slots.values()).map((slot) => {
-    const isDefault =
-      slot.name === 'default' || slot.name === '' || slot.name === '-';
-    if (isDefault) {
+    if (isDefaultSlot(slot)) {
       return javascript`
       {#if children}
         {@render children()}
@@ -289,20 +290,15 @@ const renderSnippets = (
         return javascript`
       {#if props.${collectionName} && ${propName}}
         {#each props.${collectionName} as item}
-          <div slot="${slot.name.replace(`<${placeholder}>`, `{item.${placeholder}}`)}">
-            {@render ${propName}(item)}
-          </div>
+          <NamedSlot name="${slot.name.replace(`<${placeholder}>`, `{item.${placeholder}}`)}" content={${propName}} arg={item} />
         {/each}
       {/if}`;
       }
     }
 
-    // Use div with slot attribute and display: contents so content projects into named slot of the web component
     return javascript`
       {#if ${propName}}
-        <div slot="${slot.name}">
-          {@render ${propName}()}
-        </div>
+        <NamedSlot name="${slot.name}" content={${propName}} />
       {/if}`;
   });
   if (parts.length === 0) {
@@ -335,13 +331,20 @@ const wrapperTemplate = (
   const namingPlan = createNamingPlan(slots, reactiveProperties);
   const typeImports = getElementTypeImports(events, reactiveProperties);
   const typeExports = getElementTypeExportsFromImports(typeImports);
+  const hasNamedSlots = Array.from(slots.values()).some(
+    (slot) => !isDefaultSlot(slot)
+  );
   return javascript`
   <script lang="ts">
     ${typeExports ?? ''}
       import '${wcPath}';
       import { setProperties${
         events.size > 0 ? ', forwardEvents' : ''
-      } } from "$lib/util.js";
+      } } from "$lib/util.js";${
+        hasNamedSlots
+          ? '\n      import NamedSlot from "$lib/NamedSlot.svelte";'
+          : ''
+      }
       ${typeImports}
       import type { Snippet } from 'svelte';
 

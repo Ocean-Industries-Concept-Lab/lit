@@ -17,6 +17,7 @@ import {viteConfigTemplate} from './lib/vite.config-template.js';
 import {svelteConfigTemplate} from './lib/svelteconf-template.js';
 import {appHtmlTemplate} from './lib/app-html-template.js';
 import {utilTemplate} from './lib/util-template.js';
+import {namedSlotTemplate} from './lib/named-slot-template.js';
 
 export const getCommand = () => {
   return {
@@ -61,6 +62,7 @@ export const generateSvelteWrapper = async (
         'svelte.config.js': svelteConfigTemplate(),
         'src/app.html': appHtmlTemplate(),
         'src/lib/util.ts': utilTemplate(),
+        'src/lib/NamedSlot.svelte': namedSlotTemplate(),
         ...sfcFiles,
       },
     };
