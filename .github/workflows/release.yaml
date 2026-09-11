@@ -24,6 +24,14 @@ jobs:
     env:
       WIREIT_LOGGER: quiet-ci
     steps:
+      # Short-lived installation token for the release GitHub App.
+      - name: Generate release bot token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Use the release bot's name and email for all git actions
         run: |
           git config --global user.name "github-actions[bot]"
@@ -36,6 +44,9 @@ jobs:
           # This makes Actions fetch all Git history so that Changesets can
           # generate changelogs with the correct commits
           fetch-depth: 0
+          # Push as the app too, so pushes to the "Version Packages" PR trigger
+          # workflow runs.
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -72,9 +83,9 @@ jobs:
           publish: npm run release
         env:
           HUSKY: 0
-          # GITHUB_TOKEN must be a PAT (not the default job token) so that the
-          # "Version Packages" PR it opens can itself trigger workflow runs.
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+          # The app token (not the default job token) so that the "Version
+          # Packages" PR it opens can itself trigger workflow runs.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           # No NPM_TOKEN: authentication happens via OIDC trusted publishing,
           # which relies on the `id-token: write` permission above. Provenance
           # is implied by trusted publishing, so NPM_CONFIG_PROVENANCE is unset.

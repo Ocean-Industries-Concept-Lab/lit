@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     # Skip the release PR, which consumes changesets rather than adding one and
     # so can never satisfy this check. Match on the branch Changesets always
-    # creates rather than on the PR author: the author is whoever owns the
-    # token in RELEASE_PAT, not a fixed bot account.
+    # creates rather than on the PR author: the author follows whichever token
+    # the release workflow uses (currently the release GitHub App's bot).
     if: ${{ github.head_ref != 'changeset-release/main' }}
     steps:
       - uses: actions/checkout@v3
