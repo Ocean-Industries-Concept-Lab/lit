@@ -1,5 +1,17 @@
 # @lit-labs/gen-wrapper-vue
 
+## 0.4.4
+
+### Patch Changes
+
+- [`417cf7ff6e236af05c2ebd837d65140722f88393`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/417cf7ff6e236af05c2ebd837d65140722f88393) Thanks [@ulrik-jo](https://github.com/ulrik-jo)! - Import types referenced by inherited reactive properties in generated Vue wrappers.
+
+  The generated `Props` interface includes reactive properties inherited from
+  superclasses and mixins, but the type imports were still derived from the
+  element's own properties only. Any inherited property with a named type was
+  emitted into `Props` without a matching import, producing a wrapper that fails
+  to compile.
+
 ## 0.4.3
 
 ### Patch Changes
