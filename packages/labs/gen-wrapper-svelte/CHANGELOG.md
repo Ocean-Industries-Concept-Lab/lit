@@ -1,5 +1,32 @@
 # @lit-labs/gen-wrapper-svelte
 
+## 0.1.1
+
+### Patch Changes
+
+- [`c91ea6cbccec99d3b630c5deb5caa61aa9a72c9d`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/c91ea6cbccec99d3b630c5deb5caa61aa9a72c9d) Thanks [@ulrik-jo](https://github.com/ulrik-jo)! - Fix the generated `.gitignore` and per-module export files.
+  - `.gitignore` now ignores `.svelte-kit/`, `dist/` and `node_modules/`. It was
+    copied from the Vue generator and listed paths like `/lib/ElementA.svelte.*`,
+    which don't exist in a Svelte package.
+  - When one source module declares several elements, the file re-exporting them
+    is now written next to the wrappers in `src/lib` with one export per line.
+    Previously it landed outside `src/lib`, where its `./` imports didn't
+    resolve, and the exports were joined with a literal `/n`.
+
+- [`230271a09f408b2d4f3ccbf0b8296a25a71c8ce2`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/230271a09f408b2d4f3ccbf0b8296a25a71c8ce2) Thanks [@ulrik-jo](https://github.com/ulrik-jo)! - Render named slot content natively in generated Svelte wrappers.
+
+  Wrappers used to project named-slot snippets through a `<div slot="…">`, which
+  broke percentage sizing and the component's `::slotted()` rules. Generated
+  packages now include a shared `NamedSlot` component that renders the snippet
+  directly into the custom element and sets `slot` on its top-level elements. It
+  falls back to a `display: contents` wrapper only when the snippet renders text.
+
+- [`30c42b3471fe16b02b81762fa3ae352ea3898db3`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/30c42b3471fe16b02b81762fa3ae352ea3898db3) Thanks [@ulrik-jo](https://github.com/ulrik-jo)! - Fix broken `src/lib/index.ts` exports for elements in subfolders when generating on Windows.
+
+  The module's source directory was used with Windows path separators, so the
+  generated re-export read `'.\sub/ElementSub.svelte'`, which JavaScript
+  evaluates to `.sub/ElementSub.svelte`.
+
 ## 0.1.0
 
 ### Minor Changes
