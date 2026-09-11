@@ -1,7 +1,7 @@
 {
   "name": "@oicl-lit/gen-wrapper-svelte",
   "description": "Code generator for Svelte wrapper for Lit components",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -17,6 +17,7 @@
   },
   "scripts": {
     "build": "wireit",
+    "prepack": "npm run build",
     "test": "wireit",
     "test:gen": "wireit",
     "test:update-goldens": "UPDATE_TEST_GOLDENS=true npm run test:gen"
