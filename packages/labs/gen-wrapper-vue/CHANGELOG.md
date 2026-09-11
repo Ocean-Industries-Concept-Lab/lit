@@ -1,5 +1,11 @@
 # @lit-labs/gen-wrapper-vue
 
+## 0.4.5
+
+### Patch Changes
+
+- [`45c50b470a3e46f3cf1c4352faae6062de20659f`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/45c50b470a3e46f3cf1c4352faae6062de20659f) Thanks [@ulrik-jo](https://github.com/ulrik-jo)! - Put each export on its own line in the file that re-exports several elements from one source module. They were joined with a literal `/n`, producing an invalid module.
+
 ## 0.4.4
 
 ### Patch Changes
