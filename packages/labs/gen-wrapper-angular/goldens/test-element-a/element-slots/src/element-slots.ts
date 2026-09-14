@@ -6,8 +6,14 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import {CellSlotsChangeEvent} from '@lit-internal/test-element-a/element-slots.js';
-export type {CellSlotsChangeEvent} from '@lit-internal/test-element-a/element-slots.js';
+import {
+  CellSlotsChangeEvent,
+  CellIconSlotsChangeEvent,
+} from '@lit-internal/test-element-a/element-slots.js';
+export type {
+  CellSlotsChangeEvent,
+  CellIconSlotsChangeEvent,
+} from '@lit-internal/test-element-a/element-slots.js';
 import type {ElementSlots as ElementSlotsElement} from '@lit-internal/test-element-a/element-slots.js';
 import '@lit-internal/test-element-a/element-slots.js';
 
@@ -29,6 +35,18 @@ export class ElementSlots {
       // TODO(justinfagnani): we need to let the element say how to get a value
       // from an event, ex: e.value
       this.cellSlotsChangeEvent.emit(e as CellSlotsChangeEvent);
+    });
+
+    this._el.addEventListener('cell-icon-slots-change', (e: Event) => {
+      // TODO(justinfagnani): we need to let the element say how to get a value
+      // from an event, ex: e.value
+      this.cellIconSlotsChangeEvent.emit(e as CellIconSlotsChangeEvent);
+    });
+
+    this._el.addEventListener('tab-icon-slots-change', (e: Event) => {
+      // TODO(justinfagnani): we need to let the element say how to get a value
+      // from an event, ex: e.value
+      this.tabIconSlotsChangeEvent.emit(e);
     });
   }
 
@@ -52,4 +70,10 @@ export class ElementSlots {
 
   @Output()
   cellSlotsChangeEvent = new EventEmitter<CellSlotsChangeEvent>();
+
+  @Output()
+  cellIconSlotsChangeEvent = new EventEmitter<CellIconSlotsChangeEvent>();
+
+  @Output()
+  tabIconSlotsChangeEvent = new EventEmitter<unknown>();
 }

@@ -195,12 +195,29 @@ const isDefaultSlot = (slot: NamedDescribed) =>
   slot.name === 'default' || slot.name === '' || slot.name === '-';
 
 /**
+ * The prop a parameterized slot loops over, matched by the text before the
+ * first placeholder, optionally pluralized: `tab-<id>-icon` loops over `tabs`.
+ */
+const findCollectionProp = (
+  slot: NamedDescribed,
+  props: Map<string, ModelProperty>
+) => {
+  const prefix = slot.name.split('<')[0].replace(/-$/, '');
+  return Array.from(props.values()).find(
+    (p) =>
+      p.name === prefix || p.name === prefix + 's' || p.name === prefix + 'es'
+  );
+};
+
+/**
  * A parameterized slot whose names the element computes.
  *
- * The element documents a `<prefix>-slots-change` event and exposes the
- * current names as `<prefix>Slots`, one `{name}` entry per slot. The wrapper
- * then renders the snippet once per entry instead of looping over a prop, so
- * the names can depend on element state and hold any number of placeholders.
+ * The slot name without its placeholders names the list: for
+ * `cell-<key>-<row>-icon` the element exposes `cellIconSlots`, one `{name}`
+ * entry per slot, and documents a `cell-icon-slots-change` event. The wrapper
+ * renders the snippet once per entry, so the names can depend on element state
+ * and hold any number of placeholders. A matching collection prop wins, so a
+ * slot that already loops over a prop keeps doing so.
  */
 type SlotList = {
   /** Element property with the entries; also the wrapper's state variable. */
@@ -211,16 +228,23 @@ type SlotList = {
 
 const getSlotList = (
   slot: NamedDescribed,
+  props: Map<string, ModelProperty>,
   events: Map<string, EventModel>
 ): SlotList | undefined => {
-  if (!slot.name.includes('<')) return undefined;
-  const prefix = slot.name.split('<')[0].replace(/-$/, '');
+  if (!slot.name.includes('<') || findCollectionProp(slot, props)) {
+    return undefined;
+  }
+  const tokens = slot.name
+    .replace(/<[^>]+>/g, '')
+    .split(/[^a-zA-Z0-9]+/)
+    .filter((token) => token.length > 0);
+  if (tokens.length === 0) return undefined;
   const event = Array.from(events.values()).find(
-    (e) => e.name === `${prefix}-slots-change`
+    (e) => e.name === `${tokens.join('-')}-slots-change`
   );
   if (event === undefined) return undefined;
   return {
-    property: `${slotNameToPropName(prefix)}Slots`,
+    property: `${slotNameToPropName(slot.name)}Slots`,
     event: event.name,
     itemType: event.type ? `${event.type.text}['detail'][number]` : 'any',
   };
@@ -228,11 +252,18 @@ const getSlotList = (
 
 const getSlotLists = (
   slots: Map<string, NamedDescribed>,
+  props: Map<string, ModelProperty>,
   events: Map<string, EventModel>
-) =>
-  Array.from(slots.values())
-    .map((slot) => getSlotList(slot, events))
-    .filter((list): list is SlotList => list !== undefined);
+) => {
+  // Names that differ only in punctuation, such as `a-<x>` and `<x>-a`, map
+  // to one list; declaring its state twice would not compile.
+  const lists = new Map<string, SlotList>();
+  for (const slot of slots.values()) {
+    const list = getSlotList(slot, props, events);
+    if (list && !lists.has(list.property)) lists.set(list.property, list);
+  }
+  return Array.from(lists.values());
+};
 
 const slotListSetter = (property: string) =>
   `set${property[0].toUpperCase()}${property.slice(1)}`;
@@ -294,13 +325,14 @@ const createNamingPlan = (
 
 const renderSlotsInterface = (
   slots: Map<string, NamedDescribed>,
+  props: Map<string, ModelProperty>,
   events: Map<string, EventModel>,
   namingPlan: NamingPlan
 ) => {
   const items = Array.from(slots.values()).map((slot) => {
     const propName =
       namingPlan.snippetNamesBySlotName.get(slot.name) ?? 'children';
-    const slotList = getSlotList(slot, events);
+    const slotList = getSlotList(slot, props, events);
     if (slotList) {
       return `${propName}?: Snippet<[${slotList.itemType}]>`;
     }
@@ -342,7 +374,7 @@ const renderSnippets = (
     }
     const propName =
       namingPlan.snippetNamesBySlotName.get(slot.name) ?? 'children';
-    const slotList = getSlotList(slot, events);
+    const slotList = getSlotList(slot, props, events);
     if (slotList) {
       // Keyed by name so a slot keeps its rendered content when entries reorder.
       return javascript`
@@ -355,15 +387,7 @@ const renderSnippets = (
     const placeholderMatch = slot.name.match(/<([^>]+)>/);
     if (placeholderMatch) {
       const placeholder = placeholderMatch[1];
-      // Try to find a property that is likely the collection for this slot.
-      // Heuristic: property name starts with the prefix of the slot name.
-      const prefix = slot.name.split('<')[0].replace(/-$/, '');
-      const collectionProp = Array.from(props.values()).find(
-        (p) =>
-          p.name === prefix ||
-          p.name === prefix + 's' ||
-          p.name === prefix + 'es'
-      );
+      const collectionProp = findCollectionProp(slot, props);
       if (collectionProp) {
         const collectionName = collectionProp.name;
         return javascript`
@@ -413,7 +437,7 @@ const wrapperTemplate = (
   const hasNamedSlots = Array.from(slots.values()).some(
     (slot) => !isDefaultSlot(slot)
   );
-  const slotLists = getSlotLists(slots, events);
+  const slotLists = getSlotLists(slots, reactiveProperties, events);
   return javascript`
   <script lang="ts">
     ${typeExports ?? ''}
@@ -430,7 +454,7 @@ const wrapperTemplate = (
 
       ${renderPropsInterface(reactiveProperties)}
       ${renderEventsInterface(events)}
-      ${renderSlotsInterface(slots, events, namingPlan)}
+      ${renderSlotsInterface(slots, reactiveProperties, events, namingPlan)}
       const {${renderEventsProps(events)} class: className, style, ${renderSlotsDestructureList(slots, namingPlan)}, ...props} = $props<Props & Events & Slots>();
       ${renderSlotListState(slotLists)}
 
