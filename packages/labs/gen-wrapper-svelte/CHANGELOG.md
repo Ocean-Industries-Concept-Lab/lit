@@ -1,5 +1,20 @@
 # @lit-labs/gen-wrapper-svelte
 
+## 0.2.0
+
+### Minor Changes
+
+- [#13](https://github.com/Ocean-Industries-Concept-Lab/lit/pull/13) [`146348a25a1bb6d62b540346cfc3d9ae67b560a0`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/146348a25a1bb6d62b540346cfc3d9ae67b560a0) Thanks [@jon-daeh](https://github.com/jon-daeh)! - Render parameterized slots whose names the element computes.
+
+  A slot documented as `@slot cell-<key>-<row>-icon` gets a snippet rendered once
+  per entry of the element's `cellIconSlots` property when the element also
+  documents a `cell-icon-slots-change` event: the slot name without its
+  placeholders names both. The wrapper reads the list on mount and on every change
+  event, and keys each `NamedSlot` by the entry's `name`. The names can depend on
+  element state and hold any number of placeholders, which the loop over a
+  consumer prop cannot express. A matching collection prop still takes
+  precedence. The snippet argument is typed from the event's `detail` entries.
+
 ## 0.1.1
 
 ### Patch Changes
