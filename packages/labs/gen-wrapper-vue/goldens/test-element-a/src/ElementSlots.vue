@@ -1,7 +1,17 @@
+<script lang="ts">
+export type {
+  CellSlotsChangeEvent,
+  CellIconSlotsChangeEvent,
+} from '@lit-internal/test-element-a/element-slots.js';
+</script>
 <script setup lang="ts">
 import {h, useSlots, reactive} from 'vue';
 import {assignSlotNodes, Slots} from '@lit-labs/vue-utils/wrapper-utils.js';
 import '@lit-internal/test-element-a/element-slots.js';
+import {
+  CellSlotsChangeEvent,
+  CellIconSlotsChangeEvent,
+} from '@lit-internal/test-element-a/element-slots.js';
 
 export interface Props {
   mainDefault?: string;
@@ -21,10 +31,23 @@ const vDefaults = {
 
 let hasRendered = false;
 
+const emit = defineEmits<{
+  (e: 'cell-slots-change', payload: CellSlotsChangeEvent): void;
+  (e: 'cell-icon-slots-change', payload: CellIconSlotsChangeEvent): void;
+  (e: 'tab-icon-slots-change', payload: CustomEvent<unknown>): void;
+}>();
+
 const slots = useSlots() as Slots;
 
 const render = () => {
-  const eventProps = {};
+  const eventProps = {
+    onCellSlotsChange: (event: CellSlotsChangeEvent) =>
+      emit('cell-slots-change', event as CellSlotsChangeEvent),
+    onCellIconSlotsChange: (event: CellIconSlotsChangeEvent) =>
+      emit('cell-icon-slots-change', event as CellIconSlotsChangeEvent),
+    onTabIconSlotsChange: (event: CustomEvent<unknown>) =>
+      emit('tab-icon-slots-change', event as CustomEvent<unknown>),
+  };
   const props = eventProps as typeof eventProps & Props;
 
   for (const p in vueProps) {

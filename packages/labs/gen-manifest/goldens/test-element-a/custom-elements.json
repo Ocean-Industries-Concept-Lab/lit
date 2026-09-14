@@ -1081,7 +1081,7 @@
         {
           "kind": "class",
           "name": "ElementSlots",
-          "description": "My awesome element",
+          "description": "My awesome element\n\n`tab-icon-slots-change` pins that a collection prop (`tabs`) takes\nprecedence over a computed slot list for `tab-<id>-icon`.",
           "superclass": {"name": "LitElement", "package": "lit"},
           "members": [
             {
@@ -1099,6 +1099,42 @@
               "type": {"text": "{ id: string; title: string; }[]"},
               "default": "[]",
               "attribute": "tabs"
+            },
+            {
+              "kind": "field",
+              "name": "cellSlots",
+              "privacy": "public",
+              "type": {
+                "text": "{ name: string; tabId: string; column: string; }[]"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "cellIconSlots",
+              "privacy": "public",
+              "type": {"text": "{ name: string; tabId: string; }[]"}
+            },
+            {
+              "kind": "method",
+              "name": "updated",
+              "privacy": "public",
+              "parameters": [
+                {
+                  "name": "changed",
+                  "type": {
+                    "text": "PropertyValues<this>",
+                    "references": [
+                      {
+                        "name": "PropertyValues",
+                        "package": "lit",
+                        "start": 0,
+                        "end": 14
+                      }
+                    ]
+                  }
+                }
+              ],
+              "return": {"type": {"text": "void"}}
             },
             {
               "kind": "method",
@@ -1129,8 +1165,58 @@
             },
             {"name": "tabs", "type": {"text": "array"}, "fieldName": "tabs"}
           ],
+          "events": [
+            {
+              "name": "cell-slots-change",
+              "type": {
+                "text": "CellSlotsChangeEvent",
+                "references": [
+                  {
+                    "name": "CellSlotsChangeEvent",
+                    "package": "@lit-internal/test-element-a",
+                    "module": "element-slots.js",
+                    "start": 0,
+                    "end": 20
+                  }
+                ]
+              },
+              "description": "Fired when `cellSlots` changes"
+            },
+            {
+              "name": "cell-icon-slots-change",
+              "type": {
+                "text": "CellIconSlotsChangeEvent",
+                "references": [
+                  {
+                    "name": "CellIconSlotsChangeEvent",
+                    "package": "@lit-internal/test-element-a",
+                    "module": "element-slots.js",
+                    "start": 0,
+                    "end": 24
+                  }
+                ]
+              },
+              "description": "Fired when `cellIconSlots` changes"
+            },
+            {
+              "name": "tab-icon-slots-change",
+              "type": {"text": "Event"},
+              "description": "Never fired"
+            }
+          ],
           "slots": [
-            {"name": "tab-<id>-icon", "description": "A dynamic slot for icons"}
+            {
+              "name": "tab-<id>-icon",
+              "description": "A dynamic slot for icons"
+            },
+            {
+              "name": "cell-<column>-<tabId>",
+              "description": "A dynamic slot whose names the element computes"
+            },
+            {
+              "name": "cell-<column>-<tabId>-icon",
+              "description": "A second computed slot with the same prefix"
+            }
           ]
         }
       ],
