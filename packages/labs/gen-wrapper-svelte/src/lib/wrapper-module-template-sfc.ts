@@ -194,6 +194,69 @@ const slotNameToPropName = (name: string) => {
 const isDefaultSlot = (slot: NamedDescribed) =>
   slot.name === 'default' || slot.name === '' || slot.name === '-';
 
+/**
+ * A parameterized slot whose names the element computes.
+ *
+ * The element documents a `<prefix>-slots-change` event and exposes the
+ * current names as `<prefix>Slots`, one `{name}` entry per slot. The wrapper
+ * then renders the snippet once per entry instead of looping over a prop, so
+ * the names can depend on element state and hold any number of placeholders.
+ */
+type SlotList = {
+  /** Element property with the entries; also the wrapper's state variable. */
+  property: string;
+  event: string;
+  itemType: string;
+};
+
+const getSlotList = (
+  slot: NamedDescribed,
+  events: Map<string, EventModel>
+): SlotList | undefined => {
+  if (!slot.name.includes('<')) return undefined;
+  const prefix = slot.name.split('<')[0].replace(/-$/, '');
+  const event = Array.from(events.values()).find(
+    (e) => e.name === `${prefix}-slots-change`
+  );
+  if (event === undefined) return undefined;
+  return {
+    property: `${slotNameToPropName(prefix)}Slots`,
+    event: event.name,
+    itemType: event.type ? `${event.type.text}['detail'][number]` : 'any',
+  };
+};
+
+const getSlotLists = (
+  slots: Map<string, NamedDescribed>,
+  events: Map<string, EventModel>
+) =>
+  Array.from(slots.values())
+    .map((slot) => getSlotList(slot, events))
+    .filter((list): list is SlotList => list !== undefined);
+
+const slotListSetter = (property: string) =>
+  `set${property[0].toUpperCase()}${property.slice(1)}`;
+
+// The setter lives in the script so the markup stays plain JavaScript.
+const renderSlotListState = (slotLists: SlotList[]) =>
+  slotLists
+    .map(
+      ({property, itemType}) =>
+        `let ${property} = $state<${itemType}[]>([]);
+      const ${slotListSetter(property)} = (slots: ${itemType}[]) => (${property} = slots);`
+    )
+    .join('\n      ');
+
+const renderSlotListTracker = (slotLists: SlotList[]) =>
+  slotLists.length === 0
+    ? ''
+    : `use:trackSlotLists={[${slotLists
+        .map(
+          ({property, event}) =>
+            `{property: '${property}', event: '${event}', set: ${slotListSetter(property)}}`
+        )
+        .join(', ')}]}`;
+
 type NamingPlan = {
   snippetNamesBySlotName: Map<string, string>;
 };
@@ -231,11 +294,16 @@ const createNamingPlan = (
 
 const renderSlotsInterface = (
   slots: Map<string, NamedDescribed>,
+  events: Map<string, EventModel>,
   namingPlan: NamingPlan
 ) => {
   const items = Array.from(slots.values()).map((slot) => {
     const propName =
       namingPlan.snippetNamesBySlotName.get(slot.name) ?? 'children';
+    const slotList = getSlotList(slot, events);
+    if (slotList) {
+      return `${propName}?: Snippet<[${slotList.itemType}]>`;
+    }
     const isDynamic = slot.name.includes('<');
     return `${propName}?: Snippet${isDynamic ? '<[any]>' : ''}`;
   });
@@ -262,6 +330,7 @@ const renderSlotsDestructureList = (
 const renderSnippets = (
   slots: Map<string, NamedDescribed>,
   props: Map<string, ModelProperty>,
+  events: Map<string, EventModel>,
   namingPlan: NamingPlan
 ) => {
   const parts = Array.from(slots.values()).map((slot) => {
@@ -273,6 +342,16 @@ const renderSnippets = (
     }
     const propName =
       namingPlan.snippetNamesBySlotName.get(slot.name) ?? 'children';
+    const slotList = getSlotList(slot, events);
+    if (slotList) {
+      // Keyed by name so a slot keeps its rendered content when entries reorder.
+      return javascript`
+      {#if ${propName}}
+        {#each ${slotList.property} as item (item.name)}
+          <NamedSlot name={item.name} content={${propName}} arg={item} />
+        {/each}
+      {/if}`;
+    }
     const placeholderMatch = slot.name.match(/<([^>]+)>/);
     if (placeholderMatch) {
       const placeholder = placeholderMatch[1];
@@ -334,13 +413,14 @@ const wrapperTemplate = (
   const hasNamedSlots = Array.from(slots.values()).some(
     (slot) => !isDefaultSlot(slot)
   );
+  const slotLists = getSlotLists(slots, events);
   return javascript`
   <script lang="ts">
     ${typeExports ?? ''}
       import '${wcPath}';
       import { setProperties${
         events.size > 0 ? ', forwardEvents' : ''
-      } } from "$lib/util.js";${
+      }${slotLists.length > 0 ? ', trackSlotLists' : ''} } from "$lib/util.js";${
         hasNamedSlots
           ? '\n      import NamedSlot from "$lib/NamedSlot.svelte";'
           : ''
@@ -350,15 +430,17 @@ const wrapperTemplate = (
 
       ${renderPropsInterface(reactiveProperties)}
       ${renderEventsInterface(events)}
-      ${renderSlotsInterface(slots, namingPlan)}
+      ${renderSlotsInterface(slots, events, namingPlan)}
       const {${renderEventsProps(events)} class: className, style, ${renderSlotsDestructureList(slots, namingPlan)}, ...props} = $props<Props & Events & Slots>();
+      ${renderSlotListState(slotLists)}
 
     </script>
     <${tagname}
     use:setProperties={props}
+    ${renderSlotListTracker(slotLists)}
     class={className}
     style={style}
     ${renderEventsMapper(events)} >
-      ${renderSnippets(slots, reactiveProperties, namingPlan)}
+      ${renderSnippets(slots, reactiveProperties, events, namingPlan)}
     </${tagname}>`;
 };

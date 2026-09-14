@@ -1,3 +1,44 @@
+export interface SlotList {
+  /** Element property holding the current `{name}` entries. */
+  property: string;
+  /** Event the element fires when the entries change. */
+  event: string;
+  // Method syntax keeps the parameter bivariant, so a setter typed with the
+  // element's own entry type is accepted.
+  set(slots: { name: string }[]): void;
+}
+
+/**
+ * Mirrors slot lists the element computes into wrapper state. Each list is
+ * read on mount, since the element may have rendered first, and again on
+ * every change event.
+ */
+export function trackSlotLists(node: HTMLElement, lists: SlotList[]) {
+  let current = lists;
+  const read = (index: number) => {
+    const slots = (node as unknown as Record<string, unknown>)[
+      current[index].property
+    ];
+    current[index].set(Array.isArray(slots) ? [...slots] : []);
+  };
+  const listeners = lists.map((list, index) => {
+    const listener = () => read(index);
+    node.addEventListener(list.event, listener);
+    read(index);
+    return listener;
+  });
+  return {
+    update(lists: SlotList[]) {
+      current = lists;
+    },
+    destroy() {
+      lists.forEach((list, index) =>
+        node.removeEventListener(list.event, listeners[index]),
+      );
+    },
+  };
+}
+
 const ignoreProps = ["class", "style", "$$slots", "children"];
 
 function updateProperty(node: HTMLElement, props: Record<string, unknown>) {

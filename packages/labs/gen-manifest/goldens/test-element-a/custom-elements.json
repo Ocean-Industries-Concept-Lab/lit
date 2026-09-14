@@ -1101,6 +1101,36 @@
               "attribute": "tabs"
             },
             {
+              "kind": "field",
+              "name": "cellSlots",
+              "privacy": "public",
+              "type": {
+                "text": "{ name: string; tabId: string; column: string; }[]"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "updated",
+              "privacy": "public",
+              "parameters": [
+                {
+                  "name": "changed",
+                  "type": {
+                    "text": "PropertyValues<this>",
+                    "references": [
+                      {
+                        "name": "PropertyValues",
+                        "package": "lit",
+                        "start": 0,
+                        "end": 14
+                      }
+                    ]
+                  }
+                }
+              ],
+              "return": {"type": {"text": "void"}}
+            },
+            {
               "kind": "method",
               "name": "render",
               "privacy": "public",
@@ -1129,8 +1159,33 @@
             },
             {"name": "tabs", "type": {"text": "array"}, "fieldName": "tabs"}
           ],
+          "events": [
+            {
+              "name": "cell-slots-change",
+              "type": {
+                "text": "CellSlotsChangeEvent",
+                "references": [
+                  {
+                    "name": "CellSlotsChangeEvent",
+                    "package": "@lit-internal/test-element-a",
+                    "module": "element-slots.js",
+                    "start": 0,
+                    "end": 20
+                  }
+                ]
+              },
+              "description": "Fired when `cellSlots` changes"
+            }
+          ],
           "slots": [
-            {"name": "tab-<id>-icon", "description": "A dynamic slot for icons"}
+            {
+              "name": "tab-<id>-icon",
+              "description": "A dynamic slot for icons"
+            },
+            {
+              "name": "cell-<column>-<tabId>",
+              "description": "A dynamic slot whose names the element computes"
+            }
           ]
         }
       ],

@@ -1,7 +1,11 @@
+<script lang="ts">
+export type {CellSlotsChangeEvent} from '@lit-internal/test-element-a/element-slots.js';
+</script>
 <script setup lang="ts">
 import {h, useSlots, reactive} from 'vue';
 import {assignSlotNodes, Slots} from '@lit-labs/vue-utils/wrapper-utils.js';
 import '@lit-internal/test-element-a/element-slots.js';
+import {CellSlotsChangeEvent} from '@lit-internal/test-element-a/element-slots.js';
 
 export interface Props {
   mainDefault?: string;
@@ -21,10 +25,17 @@ const vDefaults = {
 
 let hasRendered = false;
 
+const emit = defineEmits<{
+  (e: 'cell-slots-change', payload: CellSlotsChangeEvent): void;
+}>();
+
 const slots = useSlots() as Slots;
 
 const render = () => {
-  const eventProps = {};
+  const eventProps = {
+    onCellSlotsChange: (event: CellSlotsChangeEvent) =>
+      emit('cell-slots-change', event as CellSlotsChangeEvent),
+  };
   const props = eventProps as typeof eventProps & Props;
 
   for (const p in vueProps) {
