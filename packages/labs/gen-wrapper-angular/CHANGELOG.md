@@ -1,5 +1,11 @@
 # @lit-labs/gen-wrapper-angular
 
+## 0.1.7
+
+### Patch Changes
+
+- [#16](https://github.com/Ocean-Industries-Concept-Lab/lit/pull/16) [`70d3ca9a4e5e52423801798b3136865ffc7a09d7`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/70d3ca9a4e5e52423801798b3136865ffc7a09d7) Thanks [@talpitoo](https://github.com/talpitoo)! - Re-export the enums, classes and constants that property and event types reference as runtime values (`export {X} from …`), so the published typings and the bundle agree; interfaces and type aliases stay `export type`.
+
 ## 0.1.6
 
 ### Patch Changes
