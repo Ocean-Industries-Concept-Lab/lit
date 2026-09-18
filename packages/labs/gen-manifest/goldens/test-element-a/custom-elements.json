@@ -279,6 +279,90 @@
     },
     {
       "kind": "javascript-module",
+      "path": "element-enum.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "Size",
+          "type": {
+            "text": "Size",
+            "references": [
+              {
+                "name": "Size",
+                "package": "@lit-internal/test-element-a",
+                "module": "element-enum.js",
+                "start": 0,
+                "end": 4
+              }
+            ]
+          }
+        },
+        {
+          "kind": "class",
+          "name": "ElementEnum",
+          "superclass": {"name": "LitElement", "package": "lit"},
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "privacy": "public",
+              "type": {
+                "text": "Size",
+                "references": [
+                  {
+                    "name": "Size",
+                    "package": "@lit-internal/test-element-a",
+                    "module": "element-enum.js",
+                    "start": 0,
+                    "end": 4
+                  }
+                ]
+              },
+              "default": "Size.small",
+              "attribute": "size"
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "privacy": "public",
+              "return": {
+                "type": {
+                  "text": "TemplateResult<1>",
+                  "references": [
+                    {
+                      "name": "TemplateResult",
+                      "package": "lit-html",
+                      "start": 0,
+                      "end": 14
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "tagName": "element-enum",
+          "customElement": true,
+          "attributes": [
+            {"name": "size", "type": {"text": "string"}, "fieldName": "size"}
+          ]
+        }
+      ],
+      "exports": [
+        {"kind": "js", "name": "Size", "declaration": {"name": "Size"}},
+        {
+          "kind": "js",
+          "name": "ElementEnum",
+          "declaration": {"name": "ElementEnum"}
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "element-enum",
+          "declaration": {"name": "ElementEnum"}
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "element-events.js",
       "declarations": [
         {
