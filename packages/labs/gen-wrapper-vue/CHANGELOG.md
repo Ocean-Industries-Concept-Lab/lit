@@ -1,5 +1,11 @@
 # @lit-labs/gen-wrapper-vue
 
+## 0.4.6
+
+### Patch Changes
+
+- [#15](https://github.com/Ocean-Industries-Concept-Lab/lit/pull/15) [`1af8231a7443adeb6b64b0ab04a2960c8b351714`](https://github.com/Ocean-Industries-Concept-Lab/lit/commit/1af8231a7443adeb6b64b0ab04a2960c8b351714) Thanks [@talpitoo](https://github.com/talpitoo)! - Declare boolean props with `default: undefined`, so an omitted boolean prop leaves the element's own default in place instead of Vue's `false`.
+
 ## 0.4.5
 
 ### Patch Changes
