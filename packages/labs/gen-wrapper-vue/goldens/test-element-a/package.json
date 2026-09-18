@@ -24,6 +24,7 @@
   "files": [
     "ElementA*",
     "ElementCollidingPropAndSlot*",
+    "ElementEnum*",
     "ElementEvents*",
     "ElementMixins*",
     "ElementNativeEvents*",

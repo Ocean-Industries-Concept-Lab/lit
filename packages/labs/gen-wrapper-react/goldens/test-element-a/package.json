@@ -20,6 +20,7 @@
   "files": [
     "element-a.{js,js.map,d.ts,d.ts.map}",
     "element-colliding-prop-and-slot.{js,js.map,d.ts,d.ts.map}",
+    "element-enum.{js,js.map,d.ts,d.ts.map}",
     "element-events.{js,js.map,d.ts,d.ts.map}",
     "element-mixins.{js,js.map,d.ts,d.ts.map}",
     "element-native-events.{js,js.map,d.ts,d.ts.map}",

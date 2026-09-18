@@ -1,5 +1,6 @@
 src/element-a.ts
 src/element-colliding-prop-and-slot.ts
+src/element-enum.ts
 src/element-events.ts
 src/element-mixins.ts
 src/element-native-events.ts

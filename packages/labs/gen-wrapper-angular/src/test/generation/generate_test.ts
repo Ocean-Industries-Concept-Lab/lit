@@ -36,6 +36,18 @@ test('basic wrapper generation', async () => {
   const pkg = analyzer.getPackage();
   await writeFileTree(outputFolder, await generateAngularWrapper(pkg));
 
+  // A runtime value behind a property type is re-exported as a value; the
+  // flattened .d.ts drops `type` on re-exports, so `export type` would promise
+  // a value the bundle does not have.
+  const enumWrapper = fs.readFileSync(
+    path.join(outputPackage, 'element-enum', 'src', 'element-enum.ts'),
+    'utf8'
+  );
+  assert.match(
+    enumWrapper,
+    "export {Size} from '@lit-internal/test-element-a/element-enum.js';"
+  );
+
   const wrapperSourceFile = fs.readFileSync(
     path.join(outputPackage, 'element-a', 'src', 'element-a.ts')
   );
