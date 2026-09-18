@@ -1,5 +1,6 @@
 export { default as ElementA } from "./ElementA.svelte";
 export { default as ElementCollidingPropAndSlot } from "./ElementCollidingPropAndSlot.svelte";
+export { default as ElementEnum } from "./ElementEnum.svelte";
 export { default as ElementEvents } from "./ElementEvents.svelte";
 export { default as ElementMixins } from "./ElementMixins.svelte";
 export { default as ElementNativeEvents } from "./ElementNativeEvents.svelte";

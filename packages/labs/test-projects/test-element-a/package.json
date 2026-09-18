@@ -10,6 +10,7 @@
   "files": [
     "/element-a.{js,js.map,d.ts,d.ts.map}",
     "/element-colliding-prop-and-slot.{js,js.map,d.ts,d.ts.map}",
+    "/element-enum.{js,js.map,d.ts,d.ts.map}",
     "/element-events.{js,js.map,d.ts,d.ts.map}",
     "/element-native-events.{js,js.map,d.ts,d.ts.map}",
     "/element-props.{js,js.map,d.ts,d.ts.map}",
@@ -39,6 +40,7 @@
       "output": [
         "element-a.{js,js.map,d.ts,d.ts.map}",
         "element-colliding-prop-and-slot.{js,js.map,d.ts,d.ts.map}",
+        "element-enum.{js,js.map,d.ts,d.ts.map}",
         "element-events.{js,js.map,d.ts,d.ts.map}",
         "element-native-events.{js,js.map,d.ts,d.ts.map}",
         "element-props.{js,js.map,d.ts,d.ts.map}",
@@ -61,6 +63,7 @@
         "package.json",
         "element-a.{js,js.map,d.ts,d.ts.map}",
         "element-colliding-prop-and-slot.{js,js.map,d.ts,d.ts.map}",
+        "element-enum.{js,js.map,d.ts,d.ts.map}",
         "element-events.{js,js.map,d.ts,d.ts.map}",
         "element-native-events.{js,js.map,d.ts,d.ts.map}",
         "element-props.{js,js.map,d.ts,d.ts.map}",

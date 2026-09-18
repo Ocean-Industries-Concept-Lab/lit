@@ -12,6 +12,7 @@ export default {
       input: [
         './src/ElementA.vue',
         './src/ElementCollidingPropAndSlot.vue',
+        './src/ElementEnum.vue',
         './src/ElementEvents.vue',
         './src/ElementMixins.vue',
         './src/ElementNativeEvents.vue',

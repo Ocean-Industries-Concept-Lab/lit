@@ -7,7 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import {ElementSubEnum} from '@lit-internal/test-element-a/sub/element-sub.js';
-export type {ElementSubEnum} from '@lit-internal/test-element-a/sub/element-sub.js';
+export {ElementSubEnum} from '@lit-internal/test-element-a/sub/element-sub.js';
 import type {ElementSub as ElementSubElement} from '@lit-internal/test-element-a/sub/element-sub.js';
 import '@lit-internal/test-element-a/sub/element-sub.js';
 
