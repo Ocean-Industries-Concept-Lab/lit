@@ -51,10 +51,29 @@ const renderPropsInterface = (props: Map<string, ModelProperty>) =>
        .join(';\n     ')}
    }`;
 
+// A `boolean` member of the prop's type, alone or in a union (`boolean[]` is
+// an Array prop to Vue and needs no default).
+const BOOLEAN_TYPE_RE = /(^|\|)\s*boolean\s*(\||$)/;
+
+// Vue casts an omitted `Boolean` prop to `false`, and the render loop below
+// would write that over the element's own default. A `default: undefined`
+// switches the cast off, so an omitted boolean stays undefined and the
+// element keeps its default.
+const renderDefineProps = (props: Map<string, ModelProperty>) => {
+  const booleans = Array.from(props.values()).filter((prop) =>
+    BOOLEAN_TYPE_RE.test(prop.type?.text ?? '')
+  );
+  return booleans.length > 0
+    ? `withDefaults(defineProps<Props>(), {${booleans
+        .map((prop) => `${prop.name}: undefined`)
+        .join(', ')}})`
+    : `defineProps<Props>()`;
+};
+
 const renderVueProps = (props: Map<string, ModelProperty>) =>
   props.size > 0
     ? javascript`
-  const vueProps = defineProps<Props>();
+  const vueProps = ${renderDefineProps(props)};
 
   const defaults = reactive({} as Props);
   const vDefaults = {

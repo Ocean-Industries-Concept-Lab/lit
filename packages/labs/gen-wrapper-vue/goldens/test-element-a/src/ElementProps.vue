@@ -22,7 +22,7 @@ export interface Props {
   variant?: AttributeVariant;
 }
 
-const vueProps = defineProps<Props>();
+const vueProps = withDefaults(defineProps<Props>(), {aBool: undefined});
 
 const defaults = reactive({} as Props);
 const vDefaults = {
